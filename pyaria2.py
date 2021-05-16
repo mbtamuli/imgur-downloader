@@ -58,7 +58,7 @@ class PyAria2(object):
                   ' --max-connection-per-server=10' \
                   ' --rpc-max-request-size=1024M' % port
 
-            if not session is None:
+            if session is not None:
                 cmd += ' --input-file=%s' \
                        ' --save-session-interval=60' \
                        ' --save-session=%s' % (session, session)
@@ -69,9 +69,8 @@ class PyAria2(object):
             while True:
                 if isAria2rpcRunning():
                     break
-                else:
-                    count += 1
-                    time.sleep(3)
+                count += 1
+                time.sleep(3)
                 if count == 5:
                     raise Exception('aria2 RPC server started failure.')
             print('aria2 RPC server is started.')
@@ -402,16 +401,12 @@ class PyAria2(object):
         return self.server.aria2.forceShutdown()
 
 def isAria2Installed():
-    for cmdpath in os.environ['PATH'].split(':'):
-        if os.path.isdir(cmdpath) and 'aria2c' in os.listdir(cmdpath):
-            return True
-
-    return False
+    return any(
+        os.path.isdir(cmdpath) and 'aria2c' in os.listdir(cmdpath)
+        for cmdpath in os.environ['PATH'].split(':')
+    )
 
 def isAria2rpcRunning():
     pgrep_process = subprocess.Popen('pgrep -l aria2', shell=True, stdout=subprocess.PIPE)
 
-    if pgrep_process.stdout.readline() == b'':
-        return False
-    else:
-        return True
+    return pgrep_process.stdout.readline() != b''

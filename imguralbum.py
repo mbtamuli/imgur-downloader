@@ -135,11 +135,7 @@ class ImgurAlbumDownloader:
         And if the folder doesn't exist, it'll try and create it.
         """
         # Try and create the album folder:
-        if foldername:
-            albumFolder = foldername
-        else:
-            albumFolder = self.album_key
-
+        albumFolder = foldername or self.album_key
         if not os.path.exists(albumFolder):
             os.makedirs(albumFolder)
 
